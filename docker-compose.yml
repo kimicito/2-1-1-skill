@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: pricehunter-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_change_me
+      MYSQL_DATABASE: pricehunter
+      MYSQL_USER: pricehunter
+      MYSQL_PASSWORD: pricehunter_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pricehunter-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: mysql://pricehunter:pricehunter_pass@db:3306/pricehunter
+      # Заполнить перед запуском:
+      APP_ID: ${APP_ID}
+      APP_SECRET: ${APP_SECRET}
+      VITE_KIMI_AUTH_URL: ${VITE_KIMI_AUTH_URL:-https://auth.kimi.com}
+      VITE_APP_ID: ${VITE_APP_ID}
+      KIMI_AUTH_URL: ${KIMI_AUTH_URL:-https://auth.kimi.com}
+      KIMI_OPEN_URL: ${KIMI_OPEN_URL:-https://open.kimi.com}
+      KIMI_API_KEY: ${KIMI_API_KEY:-}
+      KIMI_API_URL: ${KIMI_API_URL:-https://api.moonshot.cn/v1/chat/completions}
+      KIMI_MODEL: ${KIMI_MODEL:-kimi-k2-0905-preview}
+      OWNER_UNION_ID: ${OWNER_UNION_ID}
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+
+volumes:
+  mysql_data:
