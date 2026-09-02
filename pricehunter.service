@@ -1,0 +1,25 @@
+[Unit]
+Description=PriceHunter 2+1+1 SaaS
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/.openclaw/workspace/projects/2-1-1-skill
+Environment=NODE_ENV=production
+Environment=PORT=3000
+EnvironmentFile=/root/.openclaw/workspace/projects/2-1-1-skill/.env
+ExecStart=/usr/bin/node dist/boot.js
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/pricehunter/out.log
+StandardError=append:/var/log/pricehunter/error.log
+SyslogIdentifier=pricehunter
+
+# Graceful shutdown
+TimeoutStopSec=30
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target
