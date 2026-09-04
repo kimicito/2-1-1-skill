@@ -1,0 +1,220 @@
+{
+  "original": "Cisco C9200-24P-E",
+  "analog": "Huawei S5735-S24P4X",
+  "original_price": 106714,
+  "analog_price": 99194,
+  "savings": "7% (~7 520₽)",
+  "recommendation": "Замена возможна в большинстве сценариев. Ключевые отличия: (1) Производительность forwarding у Cisco выше (190.4 vs 96 Mpps), что критично для сетей с высокой плотностью мелких пакетов; (2) Huawei поддерживает BGP/IS-IS для IPv6 (Cisco тоже, но в других лицензиях); (3) Отсутствует MACsec у Huawei — критично для финансовых/госучреждений; (4) PoE бюджет у Huawei выше с двумя БП (1600W vs 740W). Для корпоративных сетей без требования MACsec и с WiFi 6 — Huawei подходит. Для ЦОБ и сетей с чувствительными данными — оставить Cisco.",
+  "matrix": [
+    {
+      "category": "Порты и интерфейсы",
+      "parameter": "GE порты (10/100/1000)",
+      "original": "24x RJ45 PoE+ (30W per port)",
+      "analog": "24x RJ45 PoE+ (30W per port)",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Порты и интерфейсы",
+      "parameter": "Uplink порты",
+      "original": "4x 10G SFP+ (модульный слот)",
+      "analog": "4x 10G SFP+ (фиксированные)",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Порты и интерфейсы",
+      "parameter": "Дополнительные слоты расширения",
+      "original": "1x слот для сетевого модуля (опционально)",
+      "analog": "Нет (все порты фиксированные)",
+      "status": "⚠️ Частично"
+    },
+    {
+      "category": "Питание",
+      "parameter": "PoE бюджет (1 БП)",
+      "original": "370W (с PWR-C6-600WAC)",
+      "analog": "370W (с одним БП)",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Питание",
+      "parameter": "PoE бюджет (2 БП)",
+      "original": "740W (с резервным БП)",
+      "analog": "1600W (с двумя БП)",
+      "status": "⚠️ Частично — Huawei выше"
+    },
+    {
+      "category": "Питание",
+      "parameter": "Резервирование питания",
+      "original": "Горячая замена, 2 БП",
+      "analog": "Горячая замена, 2 БП",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Производительность",
+      "parameter": "Коммутационная способность",
+      "original": "128 Gbps",
+      "analog": "128 Gbps / 336 Gbps (с учётом бэкплейна)",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Производительность",
+      "parameter": "Forwarding rate",
+      "original": "190.4 Mpps",
+      "analog": "96 Mpps",
+      "status": "🔴 Критично — Cisco в 2x выше"
+    },
+    {
+      "category": "Производительность",
+      "parameter": "MAC-таблица",
+      "original": "32,000 записей",
+      "analog": "32,000–64,000 записей (стандарт серии)",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Производительность",
+      "parameter": "Jumbo Frame",
+      "original": "9198 байт",
+      "analog": "9216 байт (стандартно)",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Производительность",
+      "parameter": "VLAN",
+      "original": "4096",
+      "analog": "4094",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "ПО и управление",
+      "parameter": "Операционная система",
+      "original": "Cisco IOS XE",
+      "analog": "Huawei VRP (Versatile Routing Platform)",
+      "status": "⚠️ Частично — разные интерфейсы, миграция требует обучения"
+    },
+    {
+      "category": "ПО и управление",
+      "parameter": "L3 маршрутизация (IPv4)",
+      "original": "OSPF, EIGRP, ISIS, RIP, VRRP, PIM-SSM, PBR",
+      "analog": "OSPF, IS-IS, BGP, VRRP, RIP, ECMP",
+      "status": "✅ Совпадает — полный набор"
+    },
+    {
+      "category": "ПО и управление",
+      "parameter": "L3 маршрутизация (IPv6)",
+      "original": "OSPFv3, RIPng, EIGRPv6 (зависит от лицензии)",
+      "analog": "OSPFv3, RIPng, IS-ISv6, BGP4+, ECMP",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "ПО и управление",
+      "parameter": "API и автоматизация",
+      "original": "NETCONF, RESTCONF, YANG, Streaming Telemetry",
+      "analog": "NETCONF, RESTCONF, SNMP, Web, Cloud Management",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "ПО и управление",
+      "parameter": "Стекирование",
+      "original": "StackWise-160 (до 160 Gbps, до 9 коммутаторов)",
+      "analog": "iStack (до 9 коммутаторов)",
+      "status": "⚠️ Частично — проприетарные технологии, несовместимы"
+    },
+    {
+      "category": "ПО и управление",
+      "parameter": "SDN / Облачное управление",
+      "original": "Cisco DNA Center, SD-Access",
+      "analog": "Huawei CloudCampus, iMaster NCE",
+      "status": "⚠️ Частично — разные экосистемы"
+    },
+    {
+      "category": "Физические характеристики",
+      "parameter": "Размеры (Ш×Г×В)",
+      "original": "445 × 350 × 44 мм (1RU)",
+      "analog": "~440 × 420 × 44 мм (1RU) — стандарт серии",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Физические характеристики",
+      "parameter": "Вес",
+      "original": "5.02 кг (6.0 кг брутто)",
+      "analog": "~5.5 кг (стандарт серии)",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Физические характеристики",
+      "parameter": "Вентиляция",
+      "original": "FRU redundant (горячая замена)",
+      "analog": "Резервирование вентиляторов (горячая замена)",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Безопасность",
+      "parameter": "MACsec (шифрование на L2)",
+      "original": "AES-128 (встроенно, поддерживается)",
+      "analog": "Не поддерживается",
+      "status": "🔴 Критично — для финансовых/госучреждений"
+    },
+    {
+      "category": "Безопасность",
+      "parameter": "802.1X / NAC",
+      "original": "Да, с Cisco ISE",
+      "analog": "Да, с MAC/802.1X/Web-портал",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Безопасность",
+      "parameter": "ACL / QoS",
+      "original": "L2/L3/L4 ACL, QoS, CoPP",
+      "analog": "L2/L3/L4 ACL, QoS, DHCP Snooping, DAI",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Безопасность",
+      "parameter": "Защита от скачков напряжения",
+      "original": "Стандартная (встроенная)",
+      "analog": "6kV на сервисных портах (промышленный уровень)",
+      "status": "⚠️ Частично — Huawei выше"
+    },
+    {
+      "category": "Интеграция",
+      "parameter": "Совместимость с существующей инфраструктурой",
+      "original": "Cisco StackWise (совместим с Cisco)",
+      "analog": "iStack (совместим только с Huawei)",
+      "status": "⚠️ Частично — требует замены стека целиком"
+    },
+    {
+      "category": "Интеграция",
+      "parameter": "Лицензирование",
+      "original": "DNA Essentials (обязательная, 3/5/7 лет)",
+      "analog": "Базовая лицензия включена, расширения опционально",
+      "status": "⚠️ Частично — Huawei дешевле по TCO"
+    },
+    {
+      "category": "Надёжность",
+      "parameter": "MTBF",
+      "original": "422,310 часов (~48.2 года)",
+      "analog": "~400,000 часов (стандарт серии)",
+      "status": "✅ Совпадает"
+    },
+    {
+      "category": "Надёжность",
+      "parameter": "Гарантия",
+      "original": "Limited Lifetime + SmartNet (опционально)",
+      "analog": "1 год стандартная (до 3 лет расширенная)",
+      "status": "⚠️ Частично — Cisco выше по умолчанию"
+    },
+    {
+      "category": "Надёжность",
+      "parameter": "Память (RAM / Flash)",
+      "original": "4 GB / 4 GB",
+      "analog": "1 GB / 512 MB",
+      "status": "⚠️ Частично — Cisco имеет больше памяти"
+    },
+    {
+      "category": "Надёжность",
+      "parameter": "CPU",
+      "original": "UADP 2.0 Mini (интегрированный ASIC)",
+      "analog": "1000 MHz @ 4 ядра",
+      "status": "⚠️ Частично — разные архитектуры"
+    }
+  ]
+}

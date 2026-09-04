@@ -1,0 +1,49 @@
+{
+  "category": "copper_cables",
+  "description": "Медные кабели, витая пара, силовые кабели",
+  "key_params": {
+    "cable_type": {
+      "label": "Тип кабеля",
+      "example": "UTP Cat6a",
+      "critical": true,
+      "note": "UTP vs FTP vs SFTP. Cat5e vs Cat6 vs Cat6a vs Cat7"
+    },
+    "conductor": {
+      "label": "Проводник",
+      "example": "Медь, 23 AWG",
+      "critical": true,
+      "note": "Медь vs CCA (алюминий с медным напылением). CCA — дешевле, но хуже передача и горит"
+    },
+    "section": {
+      "label": "Сечение",
+      "example": "0.57мм (23 AWG)",
+      "critical": true,
+      "note": "Для PoE — чем больше сечение, тем меньше потери"
+    },
+    "shielding": {
+      "label": "Экранирование",
+      "example": "S/FTP, экран каждой пары + общий",
+      "critical": false,
+      "note": "Важно в промзонах с помехами. Для офиса — UTP достаточно"
+    },
+    "jacket": {
+      "label": "Оболочка",
+      "example": "LSZH (негорючая, низкое дымовыделение)",
+      "critical": false,
+      "note": "LSZH vs PVC. Для общественных зданий — LSZH обязательно"
+    },
+    "length": {
+      "label": "Длина бухты",
+      "example": "305м",
+      "critical": false,
+      "note": "Стандарт — 305м. Проверить остатки на складе"
+    }
+  },
+  "auto_detect_keywords": [
+    "кабель", "витая пара", "utp", "ftp", "sftp", "cat5e", "cat6", "cat6a", "cat7",
+    "медный", "lan кабель", "силовой", "экранированный"
+  ],
+  "version": 1,
+  "learned_from": [],
+  "date_created": "2026-07-04"
+}

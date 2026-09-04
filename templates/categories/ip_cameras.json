@@ -1,0 +1,72 @@
+{
+  "category": "ip_cameras",
+  "description": "IP-камеры видеонаблюдения (цилиндрические, купольные, PTZ)",
+  "key_params": {
+    "resolution": {
+      "label": "Разрешение",
+      "example": "5Мп (2592×1944)",
+      "critical": true,
+      "note": "Критично для детализации. 2Мп, 5Мп, 8Мп, 4K"
+    },
+    "sensor": {
+      "label": "Сенсор",
+      "example": "1/2.8\" Sony Starvis",
+      "critical": true,
+      "note": "Влияет на светочувствительность и шум"
+    },
+    "lens": {
+      "label": "Объектив",
+      "example": "Моторизированный 2.7-13.5мм",
+      "critical": true,
+      "note": "Фиксированный vs моторизированный (зум). Влияет на гибкость установки"
+    },
+    "ir_range": {
+      "label": "ИК-подсветка",
+      "example": "65м",
+      "critical": true,
+      "note": "Дальность ночного видения"
+    },
+    "ip_rating": {
+      "label": "Защита корпуса",
+      "example": "IP67, IK10",
+      "critical": true,
+      "note": "IP67 — уличная, IK10 — антивандальная"
+    },
+    "wdr": {
+      "label": "WDR / HDR",
+      "example": "120дБ",
+      "critical": false,
+      "note": "Важно при контрсвете (окна, въезды)"
+    },
+    "analytics": {
+      "label": "Видеоаналитика",
+      "example": "Детекция лиц, пересечение линии, вторжение",
+      "critical": false,
+      "note": "Не всегда требуется. Зависит от проекта"
+    },
+    "frame_rate": {
+      "label": "Частота кадров",
+      "example": "25/30fps",
+      "critical": false,
+      "note": "60fps — для быстрых объектов"
+    },
+    "power": {
+      "label": "Питание",
+      "example": "PoE 802.3af / DC 12В",
+      "critical": false,
+      "note": "PoE — стандарт, но проверить совместимость с коммутатором"
+    },
+    "storage": {
+      "label": "Хранение",
+      "example": "microSD 256Гб, ONVIF",
+      "critical": false,
+      "note": "microSD для локального резервирования, ONVIF — для NVR"
+    }
+  },
+  "auto_detect_keywords": [
+    "камера", "ip-камера", "видеокамера", "beward", "dahua", "hikvision", "bullet", "dome", "ptz"
+  ],
+  "version": 1,
+  "learned_from": ["Beward SV3218RBZ", "Dahua IPC-HFW2531T"],
+  "date_created": "2026-07-04"
+}

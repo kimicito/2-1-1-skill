@@ -1,0 +1,61 @@
+{
+  "category": "fiber_optic_patches",
+  "description": "Оптические кассеты, патч-корды, pigtail, МТР/МТО",
+  "key_params": {
+    "fiber_type": {
+      "label": "Тип волокна",
+      "example": "OM4",
+      "critical": true,
+      "note": "OM3 vs OM4 vs OS2. Разное расстояние для 10G/40G. OS2 — single-mode для длинных дистанций"
+    },
+    "polarity": {
+      "label": "Полярность",
+      "example": "Type A",
+      "critical": true,
+      "note": "Type A vs Type B vs Type C. НЕ взаимозаменяемы! Должна совпадать с trunk-кабелем"
+    },
+    "connector": {
+      "label": "Тип коннектора",
+      "example": "LC/UPC duplex",
+      "critical": true,
+      "note": "LC vs SC vs FC. APC vs UPC vs PC — разные потери и совместимость"
+    },
+    "ports_count": {
+      "label": "Количество портов/волокон",
+      "example": "12 портов LC duplex (24 волокна)",
+      "critical": true,
+      "note": "Должно совпадать с панелью/шасси. MTP-12 vs MTP-24"
+    },
+    "form_factor": {
+      "label": "Форм-фактор",
+      "example": "1U, 19\" монтаж",
+      "critical": true,
+      "note": "Должен совпадать с шасси. 1U, 2U, 3U, или встраиваемый"
+    },
+    "housing": {
+      "label": "Корпус / материал",
+      "example": "Металл, RAL 7035",
+      "critical": false,
+      "note": "Металл vs пластик. Цвет — косметика, но может влиять на терморасширение"
+    },
+    "insertion_loss": {
+      "label": "Вносимые потери",
+      "example": "≤0.35 дБ",
+      "critical": false,
+      "note": "Важно для длинных линий. Короткие — не критично"
+    },
+    "return_loss": {
+      "label": "Обратные потери",
+      "example": "≥50 дБ (UPC)",
+      "critical": false,
+      "note": "APC ≥60 дБ — лучше для аналоговых систем"
+    }
+  },
+  "auto_detect_keywords": [
+    "кассета", "патч-корд", "пигтейл", "pigtail", "мтр", "мто", "nikomax", "snr",
+    "om3", "om4", "os2", "mtp", "mpo", "lc", "sc", "apc", "upc"
+  ],
+  "version": 1,
+  "learned_from": ["Nikomax NMF-CT12M4PA"],
+  "date_created": "2026-07-04"
+}

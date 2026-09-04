@@ -1,0 +1,88 @@
+{
+  "cache_rules": {
+    "max_age_days": 7,
+    "version": 1,
+    "description": "Кэш цен и спецификаций. При запросе проверяется актуальность по дате."
+  },
+  "entries": {
+    "Nikomax NMF-CT12M4PA-MTPM-LCU-TR": {
+      "category": "fiber_optic_patches",
+      "prices": {
+        "supplier_1": {
+          "name": "Regard.ru",
+          "price": 25862,
+          "url": "https://www.regard.ru/catalog/product/12345",
+          "date": "2026-07-04",
+          "currency": "RUB"
+        },
+        "supplier_2": {
+          "name": "Born-shop.ru",
+          "price": 22353,
+          "url": "https://www.born-shop.ru/product/12345",
+          "date": "2026-07-04",
+          "currency": "RUB"
+        }
+      },
+      "specs": {
+        "fiber_type": "OM4",
+        "polarity": "Type A",
+        "connector": "LC/UPC",
+        "ports_count": "12 LC duplex",
+        "form_factor": "1U, 19\""
+      },
+      "analogs": {
+        "SNR MCM4-MPO-1U-12LC-AQU": {
+          "price": 7996,
+          "supplier": "Born-shop.ru",
+          "url": "https://www.born-shop.ru/product/67890",
+          "date": "2026-07-04",
+          "deviations": {
+            "fiber_type": {
+              "original": "OM4",
+              "analog": "OM3",
+              "type": "значительное",
+              "impact": "Расстояние 10G сокращается с 400м до 300м"
+            }
+          }
+        }
+      },
+      "last_updated": "2026-07-04T12:00:00+03:00"
+    },
+    "Beward SV3218RBZ": {
+      "category": "ip_cameras",
+      "prices": {
+        "supplier_1": {
+          "name": "Tinko.ru",
+          "price": 44600,
+          "url": "https://www.tinko.ru/catalog/product/327598",
+          "date": "2026-07-04",
+          "currency": "RUB"
+        }
+      },
+      "specs": {
+        "resolution": "5Мп (2592×1944)",
+        "sensor": "1/2.8\" Sony Starvis",
+        "lens": "Моторизированный 2.7-13.5мм",
+        "ir_range": "65м",
+        "ip_rating": "IP67, IK10"
+      },
+      "analogs": {
+        "Beward SV3210RBZ": {
+          "price": 26500,
+          "supplier": "Beward.ru",
+          "url": "https://www.beward.ru/product/sv3210rbz",
+          "date": "2026-07-04",
+          "deviations": {
+            "lens": {
+              "original": "2.7-13.5мм",
+              "analog": "2.8-11мм",
+              "type": "незначительное",
+              "impact": "Зона покрытия сокращается на 15%"
+            }
+          }
+        }
+      },
+      "last_updated": "2026-07-04T12:30:00+03:00"
+    }
+  }
+}

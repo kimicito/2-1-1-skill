@@ -1,0 +1,33 @@
+{
+  "ip_cameras": [
+    "камера", "ip-камера", "видеокамера", "ip камера", "видео",
+    "beward", "dahua", "hikvision", "axis", "bullet", "dome", "ptz",
+    "цилиндрическая", "купольная", "наружная", "уличная"
+  ],
+  "fiber_optic_patches": [
+    "кассета", "патч-корд", "пигтейл", "pigtail", "мтр", "мто",
+    "nikomax", "snr", "fiber", "волокно", "оптическ",
+    "om3", "om4", "os2", "om2", "single mode", "multimode",
+    "mtp", "mpo", "lc", "sc", "fc", "st", "apc", "upc"
+  ],
+  "copper_cables": [
+    "кабель", "витая пара", "utp", "ftp", "sftp", "cat5e", "cat6",
+    "cat6a", "cat7", "сечение", "изоляция", "медный", "lan кабель"
+  ],
+  "switches": [
+    "коммутатор", "switch", "cisco", "huawei", "arista", "juniper",
+    "порт", "poe", "poe+", "sfp", "qsfp", "10g", "1g", "40g",
+    "управляемый", "неуправляемый"
+  ],
+  "power_supplies": [
+    "источник питания", "блок питания", "бп", "ups", "ибп",
+    "бесперебойник", "inverter", "стабилизатор", " pdu"
+  ],
+  "servers": [
+    "сервер", "server", "hp", "dell", "ibm", "lenovo",
+    "blade", "rack", "tower", "cpu", "ram", "ddr"
+  ],
+  "_unknown": [
+    "default"
+  ]
+}

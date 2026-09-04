@@ -1,0 +1,35 @@
+{
+  "name": "Price Comparison Agent",
+  "description": "Agent for searching and comparing prices on materials and equipment. Formula 2+1+1: 2 original prices + cross-brand analog + same-brand analog.",
+  "version": "7.4",
+  "skills": ["price-comparison"],
+  "input": {
+    "excel_file": "string - path to input Excel with product list",
+    "results_json": "string - path to JSON with price data (optional, will search if not provided)",
+    "output_dir": "string - directory to save results"
+  },
+  "output": {
+    "excel_file": "price_comparison_main_YYYYMMDD_HHMMSS.xlsx",
+    "analogs_other": "analogs_other_brand_YYYYMMDD_HHMMSS.json",
+    "analogs_same": "analogs_same_brand_YYYYMMDD_HHMMSS.json"
+  },
+  "workflow": [
+    "Read input Excel with product list",
+    "For each product: search 2 original prices",
+    "Search cross-brand analog (5 min limit)",
+    "Search same-brand analog (10 min limit)",
+    "Run inline eval (25 checks)",
+    "Generate Excel with 3 tabs: prices, cross-brand analogs, same-brand analogs",
+    "Run post-factum eval"
+  ],
+  "eval_rules": {
+    "fail_threshold": 0,
+    "warn_threshold": 4,
+    "checks": 25
+  },
+  "fallbacks": {
+    "price_not_found": "Write 'Not found in 10 min' and continue",
+    "analog_not_found": "Write '—' (dash) and continue",
+    "price_not_listed": "Write 'Price not listed' with orange color + URL"
+  }
+}

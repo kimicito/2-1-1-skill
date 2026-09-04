@@ -1,0 +1,55 @@
+{
+  "category": "switches",
+  "description": "Сетевые коммутаторы (управляемые, неуправляемые, PoE)",
+  "key_params": {
+    "ports_count": {
+      "label": "Количество портов",
+      "example": "24×RJ45 + 4×SFP+",
+      "critical": true,
+      "note": "RJ45 — медь, SFP/SFP+/QSFP — оптика/медь. Должно совпадать с проектом"
+    },
+    "poe": {
+      "label": "PoE",
+      "example": "PoE+ 802.3at, 30Вт на порт",
+      "critical": true,
+      "note": "PoE vs PoE+ vs PoE++. Мощность на порт для PTZ-камер, точек доступа"
+    },
+    "throughput": {
+      "label": "Производительность",
+      "example": "128 Гбит/с (switching capacity)",
+      "critical": true,
+      "note": "Switching capacity, forwarding rate. Не должно быть bottleneck"
+    },
+    "management": {
+      "label": "Управление",
+      "example": "L3, CLI, SNMP, Web",
+      "critical": true,
+      "note": "L2 vs L3. Управляемый vs неуправляемый. Для ядра — L3, для доступа — L2"
+    },
+    "speed": {
+      "label": "Скорость портов",
+      "example": "10/100/1000 Мбит/с + 10G SFP+",
+      "critical": false,
+      "note": "1G vs 10G. Для камер — 1G достаточно, для серверов — 10G+"
+    },
+    "uplink": {
+      "label": "Аплинки",
+      "example": "4×10G SFP+",
+      "critical": false,
+      "note": "Количество и скорость uplink-портов. Критично для ядра сети"
+    },
+    "redundancy": {
+      "label": "Избыточность",
+      "example": "STP/RSTP, стекирование",
+      "critical": false,
+      "note": "Для критичных сетей — stacking, M-LAG, VRRP"
+    }
+  },
+  "auto_detect_keywords": [
+    "коммутатор", "switch", "cisco", "huawei", "arista", "juniper", "порт", "poe",
+    "sfp", "qsfp", "10g", "1g", "40g", "управляемый", "неуправляемый"
+  ],
+  "version": 1,
+  "learned_from": [],
+  "date_created": "2026-07-04"
+}
