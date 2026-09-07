@@ -4,6 +4,7 @@
  * Без ключа движок работает в режиме прямого парсинга (fallback).
  */
 import type { ItemResult, PriceOffer, MatrixRow } from "./types";
+import { extractSKU } from "./extract";
 
 const API_URL = () => process.env.KIMI_API_URL ?? "https://api.moonshot.cn/v1/chat/completions";
 const MODEL = () => process.env.KIMI_MODEL ?? "kimi-k2-0905-preview";
@@ -29,29 +30,38 @@ interface LlmResult {
   sources?: string[];
 }
 
-const SYSTEM_PROMPT = `Ты — закупочный аналитик. Ищешь цены на российских B2B-площадках и маркетплейсах (nag.ru, chipdip.ru, vseinstrumenti.ru, 220-volt.ru, pulscen.ru, satro-paladin.com и др.).
+const SYSTEM_PROMPT = `Ты — закупочный аналитик. Ищешь цены на российских B2B-площадках и маркетплейсах.
+
+ФОРМАТ ВХОДНЫХ ДАННЫХ:
+Позиция задана в формате: Описание//Артикул//Бренд
+Пример: "Видеокамера 4Мп уличная...//DS-2CD2643G0-IZS//HIKVISION"
+
+ИЩИ ПО АРТИКУЛУ (DS-2CD2643G0-IZS) — это точнее, чем по описанию!
 
 По заданной позиции найди по формуле 2+1+1:
 1. Цена 1 — оригинал у поставщика 1 (прямая ссылка на страницу товара!)
 2. Цена 2 — оригинал у ДРУГОГО поставщика
-3. Аналог ДРУГОЙ марки с идентичными параметрами (включая китайские бренды)
+3. Аналог ДРУГОЙ марки (не тот же бренд!)
 4. Аналог ТОЙ ЖЕ марки (другая модель)
 
-Правила:
+ПРАВИЛА:
+- Ищи по АРТИКУЛУ, а не по полному описанию
 - URL — только прямые страницы товаров, НЕ главные, НЕ поиск, НЕ категории
-- Цены в рублях, числом. Если товар есть, но цена не указана — price: null
+- Цены в рублях, числом
+- Если товар есть, но цена не указана — price: null
 - Если не нашёл — null в соответствующем поле
 - Точность артикулов: C47-60 и C47-40 — разные позиции
-- Цель — СНИЗИТЬ цену закупки: предпочитай дешёвые проверенные варианты
-- В comment: рекомендация (согласовать аналог / требует теста / закупать оригинал) + экономия в %
+- Цель — СНИЗИТЬ цену закупки
+
+ВАЖНО: Не используй цены из примеров! Каждый запрос — реальный поиск.
 
 Ответь СТРОГО одним JSON-объектом:
 {
-  "price1": {"price": 925, "url": "https://...", "supplier": "site.ru", "title": "..."} | null,
+  "price1": {"price": ЧИСЛО_ИЛИ_NULL, "url": "https://РЕАЛЬНЫЙ_URL_ТОВАРА", "supplier": "домен.ru", "title": "Название товара"} | null,
   "price2": {...} | null,
-  "analog_other_brand": {"price": 700, "url": "...", "supplier": "...", "title": "...", "brand": "SNR", "params_match": "скорость и длина волны совпадают"} | null,
-  "analog_same_brand": {"price": 2391, "url": "...", "supplier": "...", "title": "...", "brand": "...", "params_diff": "индустриальный диапазон температур"} | null,
-  "comment": "Согласовать аналог SNR. Экономия 24%.",
+  "analog_other_brand": {"price": ЧИСЛО_ИЛИ_NULL, "url": "...", "supplier": "...", "title": "...", "brand": "ДРУГАЯ_МАРКА", "params_match": "что совпадает"} | null,
+  "analog_same_brand": {"price": ЧИСЛО_ИЛИ_NULL, "url": "...", "supplier": "...", "title": "...", "brand": "ТА_ЖЕ_МАРКА", "params_diff": "отличия"} | null,
+  "comment": "Рекомендация + экономия в %",
   "sources": ["https://...datasheet"]
 }`;
 
@@ -132,9 +142,16 @@ export async function processItemWithLlm(
   budgetMs: number,
 ): Promise<ItemResult | null> {
   const start = Date.now();
+  const skuInfo = extractSKU(name);
+  
+  // Формируем запрос с акцентом на артикул
+  const searchQuery = skuInfo.sku 
+    ? `Артикул: ${skuInfo.sku} (${skuInfo.brand}). ${skuInfo.description}`
+    : name;
+    
   const messages: ChatMessage[] = [
     { role: "system", content: SYSTEM_PROMPT },
-    { role: "user", content: `Позиция №${num}: ${name}` },
+    { role: "user", content: `Позиция №${num}: ${searchQuery}` },
   ];
 
   let parsed: LlmResult | null = null;

@@ -311,21 +311,61 @@ function buildComment(r: ItemResult): { comment: string; recommendation: ItemRes
 import { llmAvailable, processItemWithLlm } from "./llm";
 
 export async function processItem(num: number, name: string): Promise<ItemResult> {
-  // Приоритет: LLM-агент с веб-поиском (если задан KIMI_API_KEY)
+  const date = new Date().toISOString().slice(0, 10);
+  
+  // === ЭТАП 1: Прямой парсинг (основной, даёт реальные цены) ===
+  const directResult = await processItemDirect(num, name);
+  if (directResult.price1 && directResult.price2 && directResult.analogOther) {
+    // Успешно нашли всё прямым парсингом
+    return directResult;
+  }
+  
+  // === ЭТАП 2: LLM fallback (если прямой парсинг не справился) ===
   if (llmAvailable()) {
     const llmResult = await processItemWithLlm(num, name, 150_000).catch(() => null);
     if (llmResult && (llmResult.price1 || llmResult.analogOther)) {
-      if (!llmResult.comment) llmResult.comment = "Позиция оценена.";
-      llmResult.issues = evalItem(llmResult);
-      if (llmResult.recommendation === "none") {
-        const bc = buildComment(llmResult);
-        llmResult.recommendation = bc.recommendation;
-      }
-      return llmResult;
+      // Валидируем LLM-результат: цены не должны быть из примеров
+      const validated = validateLlmResult(llmResult, name);
+      if (validated) return validated;
     }
-    // LLM не справился — fallback на прямой парсинг
   }
+  
+  // === ЭТАП 3: Возвращаем лучшее из прямого парсинга ===
+  return directResult;
+}
 
+/** Валидация LLM-результата: отсеиваем галлюцинации из примеров */
+function validateLlmResult(r: ItemResult, name: string): ItemResult | null {
+  // Чёрный список цен из примеров в промпте
+  const suspiciousPrices = [925, 890, 700, 2391, 10500, 850, 980, 1100];
+  const suspiciousSuppliers = ['site1.ru', 'site2.ru', 'site3.ru', 'site4.ru'];
+  
+  for (const offer of [r.price1, r.price2, r.analogOther?.offer, r.analogSame?.offer]) {
+    if (!offer) continue;
+    if (offer.price && suspiciousPrices.includes(offer.price)) {
+      console.warn(`[validate] Suspicious price ${offer.price} from LLM example for ${name}`);
+      return null;
+    }
+    if (suspiciousSuppliers.includes(offer.supplier)) {
+      console.warn(`[validate] Suspicious supplier ${offer.supplier} from LLM example for ${name}`);
+      return null;
+    }
+  }
+  
+  // Проверка: аналог другой марки не должен быть той же маркой
+  const skuInfo = extractSKU(name);
+  if (r.analogOther?.brand && skuInfo.brand) {
+    if (r.analogOther.brand.toLowerCase() === skuInfo.brand.toLowerCase()) {
+      console.warn(`[validate] LLM returned same brand as analog: ${r.analogOther.brand}`);
+      r.analogOther = null; // Сбрасываем неверный аналог
+    }
+  }
+  
+  return r;
+}
+
+/** Прямой парсинг — основной путь */
+async function processItemDirect(num: number, name: string): Promise<ItemResult> {
   const date = new Date().toISOString().slice(0, 10);
   const result: ItemResult = {
     num,
@@ -342,9 +382,6 @@ export async function processItem(num: number, name: string): Promise<ItemResult
 
   // Цена 1 (критично)
   result.price1 = await findOriginalPrice(name, new Set(), BUDGET.price1);
-  if (result.price1 && result.price1.price === null) {
-    result.price1.notFound = false; // товар есть, цены нет
-  }
 
   // Цена 2 (другой поставщик)
   const used = new Set<string>();
