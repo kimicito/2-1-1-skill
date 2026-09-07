@@ -7,6 +7,7 @@ import { webSearch, fetchText, domainOf, looksLikeProductPage } from "./search";
 import {
   extractPrice,
   extractBrand,
+  extractSKU,
   typeKeywords,
   extractParams,
 } from "./extract";
@@ -55,10 +56,24 @@ async function findOriginalPrice(
   budget: number,
 ): Promise<PriceOffer | null> {
   const start = Date.now();
-  const queries = [
-    `${name} купить цена`,
-    `${name.split("\n")[0]} цена`,
-  ];
+  const skuInfo = extractSKU(name);
+  
+  // Приоритет: ищем по чистому артикулу (точное совпадение)
+  const queries = skuInfo.sku
+    ? [
+        `${skuInfo.sku} купить цена`,
+        `${skuInfo.sku} ${skuInfo.brand} купить`,
+        `${skuInfo.cleanSku} купить цена`,
+      ]
+    : [
+        `${name} купить цена`,
+        `${name.split("\n")[0]} цена`,
+      ];
+      
+  // Добавляем запрос по описанию как fallback
+  if (skuInfo.sku && skuInfo.description) {
+    queries.push(`${skuInfo.description.slice(0, 50)} купить цена`);
+  }
   for (const q of queries) {
     if (expired(start, budget)) break;
     const hits = await webSearch(q, 8);
@@ -85,7 +100,8 @@ async function findAnalog(
   budget: number,
 ): Promise<AnalogBlock | null> {
   const start = Date.now();
-  const brand = extractBrand(name);
+  const skuInfo = extractSKU(name);
+  const brand = skuInfo.brand || extractBrand(name);
   const type = typeKeywords(name, brand);
   if (!type) return null;
 
@@ -94,6 +110,7 @@ async function findAnalog(
       ? [
           `${type} аналог купить цена${brand ? ` -${brand}` : ""}`,
           `${type} купить цена${brand ? ` -${brand}` : ""}`,
+          `${skuInfo.description.slice(0, 40)} аналог купить`,
         ]
       : brand
         ? [`${brand} ${type} купить цена`, `${brand} ${type.split(" ")[0]} цена`]
@@ -189,8 +206,51 @@ function evalItem(r: ItemResult): EvalIssue[] {
 
   if (!r.price1) issues.push({ level: "fail", message: "Нет ни одной цены оригинала" });
   if (!r.comment.trim()) issues.push({ level: "fail", message: "Пустой комментарий" });
-  if (r.price1 && r.price2 && r.price1.supplier === r.price2.supplier)
-    issues.push({ level: "fail", message: "Одинаковые поставщики у Цены 1 и Цены 2" });
+  
+  // Проверка на дублирование поставщиков
+  if (r.price1 && r.price2) {
+    const dom1 = r.price1.supplier;
+    const dom2 = r.price2.supplier;
+    if (dom1 && dom2 && dom1 === dom2) {
+      issues.push({ level: "fail", message: `Одинаковые поставщики у Цены 1 и Цены 2 (${dom1})` });
+    }
+    // Проверка: URL не должны быть одинаковыми
+    if (r.price1.url === r.price2.url) {
+      issues.push({ level: "fail", message: "URL Цены 2 идентичен URL Цены 1 — один и тот же товар" });
+    }
+  }
+  
+  // Проверка на дублирование цен (галлюцинация)
+  if (p1 && p2 && p1 > 0 && Math.abs(p1 - p2) / p1 < 0.01) {
+    if (r.price1?.supplier === r.price2?.supplier) {
+      issues.push({ level: "fail", message: `Цена 2 дублирует Цену 1 (идентичная цена ${p1} ₽ от того же источника)` });
+    }
+  }
+  
+  // Проверка URL на шаблонные/невалидные
+  for (const offer of [r.price1, r.price2, r.analogOther?.offer, r.analogSame?.offer]) {
+    if (!offer?.url) continue;
+    const url = offer.url.toLowerCase();
+    if (url.includes('site1.ru') || url.includes('site2.ru') || url.includes('site3.ru') || url.includes('example.com')) {
+      issues.push({ level: "fail", message: `URL содержит template-данные: ${offer.url}` });
+    }
+    if (url.includes('/search') || url.includes('?q=') || url.includes('catalog/')) {
+      issues.push({ level: "warn", message: `URL ведёт на поиск/каталог, не на конкретный товар: ${offer.url}` });
+    }
+  }
+  
+  // Проверка диапазона цен
+  for (const [label, price] of [['Цена 1', p1], ['Цена 2', p2]] as const) {
+    if (price !== null) {
+      if (price < 10) {
+        issues.push({ level: "warn", message: `${label} подозрительно низкая (${price} ₽) — проверьте единицу измерения` });
+      }
+      if (price > 10_000_000) {
+        issues.push({ level: "warn", message: `${label} подозрительно высокая (${price} ₽) — проверьте единицу измерения` });
+      }
+    }
+  }
+  
   if (p1 && p2 && Math.max(p1, p2) / Math.min(p1, p2) > 10)
     issues.push({ level: "fail", message: "Цены отличаются >10x — проверьте единицы измерения" });
   if (p1 && p2 && Math.max(p1, p2) / Math.min(p1, p2) > 3)

@@ -1,9 +1,17 @@
-/** Извлечение цены и метаданных со страницы товара. */
+/** Извлечение цены, SKU и метаданных со страницы товара. */
 
 export interface PageInfo {
   price: number | null;
   title: string;
   currency: string;
+}
+
+export interface SKUInfo {
+  fullName: string;     // Полное название как в файле
+  description: string;  // Описание до //
+  sku: string;          // Артикул между //
+  brand: string;        // Бренд после //
+  cleanSku: string;     // Артикул без спецсимволов для поиска
 }
 
 const MIN_PRICE = 10;
@@ -117,7 +125,32 @@ export function extractPrice(html: string): PageInfo {
   return { price, title: extractTitle(html), currency: "RUB" };
 }
 
-/** Токен, похожий на бренд: латиница капсом или Капитализированная */
+/** Извлечь SKU, бренд и описание из строки формата: Описание//Артикул//Бренд */
+export function extractSKU(name: string): SKUInfo {
+  // Формат: "Описание//Артикул//Бренд" или "Описание//Артикул////Бренд" (с пустым полем)
+  const parts = name.split("//").map((s) => s.trim());
+  
+  if (parts.length >= 3) {
+    const description = parts[0];
+    const sku = parts[1];
+    const brand = parts[2] || parts[3] || ""; // Иногда бывает "////" между артикулом и брендом
+    // Чистый артикул для поиска (убираем спецсимволы, оставляем буквы/цифры/дефис)
+    const cleanSku = sku.replace(/[^a-zA-Z0-9\-]/g, "");
+    return { fullName: name, description, sku, brand, cleanSku };
+  }
+  
+  // Fallback: пытаемся найти артикул по паттерну (буквы+цифры, минимум 6 символов)
+  const skuMatch = name.match(/\b([A-Z]{1,4}[-]?[0-9]{2,}[A-Z0-9\-]{2,})\b/i);
+  const brandMatch = name.match(/\b([A-Z][A-Za-z0-9-]{2,20})\b/);
+  
+  return {
+    fullName: name,
+    description: name,
+    sku: skuMatch ? skuMatch[1] : "",
+    brand: brandMatch ? brandMatch[1] : "",
+    cleanSku: skuMatch ? skuMatch[1].replace(/[^a-zA-Z0-9\-]/g, "") : "",
+  };
+}
 export function extractBrand(name: string): string {
   const tokens = name.split(/[\s,;:()[\]/\\]+/).filter(Boolean);
   for (const t of tokens) {

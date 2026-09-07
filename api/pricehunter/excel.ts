@@ -108,13 +108,13 @@ export async function buildWorkbook(items: ItemResult[]): Promise<{ base64: stri
   // ── Вкладка 1: Сводная таблица
   const ws = wb.addWorksheet("Сводная таблица");
   ws.columns = [
-    { width: 5 }, { width: 45 }, { width: 14 }, { width: 16 }, { width: 14 },
-    { width: 16 }, { width: 18 }, { width: 16 }, { width: 18 }, { width: 16 },
+    { width: 5 }, { width: 45 }, { width: 14 }, { width: 20 }, { width: 14 },
+    { width: 20 }, { width: 18 }, { width: 20 }, { width: 18 }, { width: 20 },
     { width: 18 }, { width: 60 },
   ];
   const head = ws.getRow(1);
-  ["№", "Наименование", "Цена 1 (₽)", "Магазин 1", "Цена 2 (₽)", "Магазин 2",
-    "Аналог другой марки (₽)", "Магазин", "Аналог той же марки (₽)", "Магазин",
+  ["№", "Наименование ТМЦ", "Цена 1", "URL 1", "Цена 2", "URL 2",
+    "Аналог (др. марка)", "URL аналога", "Аналог (та же марка)", "URL аналога",
     "Рекомендация", "Комментарий"].forEach((h, i) => (head.getCell(i + 1).value = h));
   headerStyle(head);
   ws.views = [{ state: "frozen", ySplit: 1 }];
@@ -124,23 +124,47 @@ export async function buildWorkbook(items: ItemResult[]): Promise<{ base64: stri
     row.getCell(1).value = it.num;
     row.getCell(2).value = it.name;
     row.getCell(2).alignment = { wrapText: true, vertical: "top" };
-    priceCell(row.getCell(3), it.price1, "Не найдена за 10 мин");
-    row.getCell(4).value = it.price1?.supplier ?? "";
-    priceCell(row.getCell(5), it.price2, "Не найдена за 10 мин");
-    row.getCell(6).value = it.price2?.supplier ?? "";
+    priceCell(row.getCell(3), it.price1, "Не найдена");
+    row.getCell(4).value = it.price1?.url ?? "";
+    if (it.price1?.url) {
+      row.getCell(4).value = { text: it.price1.supplier ?? "Ссылка", hyperlink: it.price1.url };
+      row.getCell(4).font = { underline: true, color: { argb: "FF0563C1" } };
+    }
+    priceCell(row.getCell(5), it.price2, "Не найдена");
+    row.getCell(6).value = it.price2?.url ?? "";
+    if (it.price2?.url) {
+      row.getCell(6).value = { text: it.price2.supplier ?? "Ссылка", hyperlink: it.price2.url };
+      row.getCell(6).font = { underline: true, color: { argb: "FF0563C1" } };
+    }
     if (it.analogOther?.offer) {
       priceCell(row.getCell(7), it.analogOther.offer, "—");
-      row.getCell(8).value = it.analogOther.offer.supplier;
-    } else row.getCell(7).value = "—";
+      row.getCell(8).value = it.analogOther.offer.url
+        ? { text: it.analogOther.offer.supplier ?? "Ссылка", hyperlink: it.analogOther.offer.url }
+        : "";
+      if (it.analogOther.offer.url) {
+        row.getCell(8).font = { underline: true, color: { argb: "FF0563C1" } };
+      }
+    } else {
+      row.getCell(7).value = "—";
+      row.getCell(8).value = "";
+    }
     if (it.analogSame?.offer) {
       priceCell(row.getCell(9), it.analogSame.offer, "—");
-      row.getCell(10).value = it.analogSame.offer.supplier;
-    } else row.getCell(9).value = "—";
+      row.getCell(10).value = it.analogSame.offer.url
+        ? { text: it.analogSame.offer.supplier ?? "Ссылка", hyperlink: it.analogSame.offer.url }
+        : "";
+      if (it.analogSame.offer.url) {
+        row.getCell(10).font = { underline: true, color: { argb: "FF0563C1" } };
+      }
+    } else {
+      row.getCell(9).value = "—";
+      row.getCell(10).value = "";
+    }
     recStyle(row.getCell(11), it.recommendation);
     row.getCell(12).value = it.comment;
     row.getCell(12).alignment = { wrapText: true, vertical: "top" };
     if (idx % 2 === 1) {
-      for (let c = 1; c <= 10; c++) {
+      for (let c = 1; c <= 12; c++) {
         if (!row.getCell(c).fill || Object.keys(row.getCell(c).fill).length === 0)
           row.getCell(c).fill = { type: "pattern", pattern: "solid", fgColor: { argb: ZEBRA } };
       }
