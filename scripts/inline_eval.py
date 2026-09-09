@@ -12,6 +12,167 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
 
+# Список известных брендов для проверки
+KNOWN_BRANDS = {
+    'hikvision', 'dahua', 'axis', 'bosch', 'sony', 'panasonic',
+    'samsung', 'lg', 'philips', 'siemens', 'schneider', 'abb',
+    'legrand', 'hyperline', 'nikomax', 'moxa', 'icp das', 'icp-das',
+    'tp-link', 'ubiquiti', 'cisco', 'juniper', 'mikrotik',
+    'gigalink', 'snr', 'eltex', 'd-link', 'zyxel', 'keenetic',
+    'hiwatch', 'tiandy', 'rvi', 'polyvision', 'bas-ip',
+    'seagate', 'wd', 'western digital', 'toshiba', 'samsung',
+    'intel', 'amd', 'nvidia', 'asus', 'gigabyte', 'msi',
+    'kingston', 'crucial', 'corsair', 'team', 'adata',
+    ' APC', 'eaton', 'ippon', 'powercom', 'vertiv',
+}
+
+# Префиксы артикулов → бренд (для случаев когда бренд не указан явно)
+ARTICLE_PREFIXES = {
+    'ds-2cd': 'hikvision',      # HIKVISION IP камеры
+    'ds-2ce': 'hikvision',      # HIKVISION Turbo HD
+    'ds-': 'hikvision',         # HIKVISION общий
+    'dh-ipc': 'dahua',          # Dahua IP камеры
+    'dh-': 'dahua',             # Dahua общий
+    'ns-208': 'icp das',        # ICP DAS коммутаторы
+    'ns-': 'icp das',           # ICP DAS общий
+    'eds-208': 'moxa',          # MOXA коммутаторы
+    'eds-': 'moxa',             # MOXA общий
+    'pc-lpm': 'hyperline',      # Hyperline патч-корды
+    'pc-lpt': 'hyperline',      # Hyperline патч-корды
+    'nmc-pc4': 'nikomax',       # NikoMax патч-корды
+    'gl-ot': 'gigalink',        # GIGALINK SFP
+    'snr-sfp': 'snr',           # SNR SFP
+}
+
+
+def extract_brand(name, supplier=None, url=None):
+    """Извлекает бренд из названия позиции, поставщика, URL или артикула.
+    
+    Проверяет по списку известных брендов и префиксов артикулов.
+    Приоритет: name (префикс артикула) > name (бренд) > supplier > url.
+    """
+    if not name and not supplier and not url:
+        return None
+    
+    # Сначала проверяем артикульные префиксы в name
+    if name:
+        name_lower = str(name).lower()
+        for prefix, brand in ARTICLE_PREFIXES.items():
+            if name_lower.startswith(prefix):
+                return brand
+        # Также проверяем, содержит ли name артикул где-то внутри
+        for prefix, brand in ARTICLE_PREFIXES.items():
+            if prefix in name_lower:
+                return brand
+    
+    # Затем ищем известный бренд в источниках
+    sources = []
+    if name:
+        sources.append(str(name).lower())
+    if supplier:
+        sources.append(str(supplier).lower())
+    if url:
+        try:
+            parsed = urlparse(str(url))
+            # Проверяем и домен, и путь (артикулы часто в пути)
+            domain = parsed.netloc.lower()
+            path = parsed.path.lower()
+            sources.append(domain)
+            sources.append(path)
+        except:
+            pass
+    
+    for source in sources:
+        # Сначала проверяем префиксы артикулов
+        for prefix, brand in ARTICLE_PREFIXES.items():
+            if prefix in source:
+                return brand
+        # Затем известные бренды
+        for brand in KNOWN_BRANDS:
+            if brand in source:
+                return brand
+    
+    # Fallback: первое слово из name
+    if name:
+        first = str(name).lower().split()[0] if str(name).strip() else None
+        if first and len(first) > 1:
+            return first
+    
+    return None
+
+
+def check_analog_brand(original_name, analog_brand_name, original_supplier=None, original_url=None, analog_url=None):
+    """Проверка, что аналог другой марки — действительно ДРУГОЙ бренд.
+    
+    Returns: (ok, level, msg, is_same_brand)
+        ok: bool — проверка пройдена
+        level: 'FAIL' | 'WARN' | None
+        msg: str — описание
+        is_same_brand: bool
+    """
+    if not original_name or not analog_brand_name:
+        return True, None, None, False
+    
+    original_brand = extract_brand(original_name, original_supplier, original_url)
+    analog_brand = extract_brand(analog_brand_name, None, analog_url)
+    
+    if not original_brand or not analog_brand:
+        return True, 'WARN', f"Не удалось определить бренд (оригинал: '{original_brand}', аналог: '{analog_brand}') — проверить вручную", False
+    
+    is_same = original_brand == analog_brand
+    
+    if is_same:
+        return False, 'FAIL', (
+            f"Аналог 'другой марки' на самом деле тот же бренд: '{original_brand}'. "
+            f"Аналог другой марки должен быть ДРУГИМ производителем (например, "
+            f"если оригинал HIKVISION — аналог должен быть Dahua, Axis, HiWatch и т.д.). "
+            f"Текущий аналог: '{analog_brand_name}'"
+        ), True
+    
+    # Проверка на подбренды (HiWatch — дочерний Hikvision)
+    parent_child = {
+        'hikvision': {'hiwatch'},
+        'hiwatch': {'hikvision'},
+        'dahua': {'imou'},
+        'imou': {'dahua'},
+    }
+    
+    related = parent_child.get(original_brand, set())
+    if analog_brand in related:
+        return True, 'WARN', (
+            f"Аналог '{analog_brand}' является дочерним/связанным брендом "
+            f"'{original_brand}'. Это допустимо, но стоит отметить в комментарии."
+        ), False
+    
+    return True, None, None, False
+
+
+def check_alt_brand(original_name, alt_brand_name, original_supplier=None, original_url=None):
+    """Проверка, что альтернатива той же марки — действительно ТОТ ЖЕ бренд.
+    
+    Returns: (ok, level, msg, is_same_brand)
+    """
+    if not original_name or not alt_brand_name:
+        return True, None, None, False
+    
+    original_brand = extract_brand(original_name, original_supplier, original_url)
+    alt_brand = extract_brand(alt_brand_name)
+    
+    if not original_brand or not alt_brand:
+        return True, 'WARN', f"Не удалось определить бренд для проверки альтернативы", False
+    
+    is_same = original_brand == alt_brand
+    
+    if not is_same:
+        return False, 'FAIL', (
+            f"Альтернатива 'той же марки' на самом деле ДРУГОЙ бренд: '{alt_brand}' "
+            f"(оригинал: '{original_brand}'). Альтернатива той же марки должна быть "
+            f"тем же производителем. Текущая альтернатива: '{alt_brand_name}'"
+        ), False
+    
+    return True, None, None, True
+
+
 def check_url_alive(url, timeout=2):
     """Проверяет, что URL возвращает не 404 (HEAD-запрос).
     
@@ -117,25 +278,6 @@ def check_url_valid(url):
         return False, f"URL некорректный: {url} ({e})"
     
     return True, None
-
-
-def check_analog_brand(original_name, analog_name):
-    """Проверка, что аналог — другой бренд (или та же марка с отклонениями).
-    
-    Returns: (ok, error_msg, is_same_brand)
-    """
-    if not original_name or not analog_name:
-        return True, None, False
-    
-    original_brand = str(original_name).split()[0].lower()
-    analog_brand = str(analog_name).split()[0].lower()
-    
-    is_same = original_brand == analog_brand
-    
-    if is_same:
-        return True, f"Аналог той же марки ({analog_brand}) — отметить отклонения", True
-    
-    return True, None, False
 
 
 def check_suppliers_different(supplier1, supplier2):
@@ -256,13 +398,27 @@ def inline_eval_item(item):
                 else:
                     warnings.append(f"{field}: {msg}")
     
-    # Проверка бренда аналога
-    ok, msg, is_same = check_analog_brand(item.get('name'), item.get('analog'))
+    # Проверка бренда аналога (другой марки)
+    ok, level, msg, is_same = check_analog_brand(
+        item.get('name'), item.get('analog_brand'),
+        item.get('supplier1'), item.get('url1'), item.get('analog_url')
+    )
     if msg:
-        if is_same:
-            warnings.append(f"Аналог: {msg}")
+        if level == 'FAIL':
+            errors.append(f"analog_brand: {msg}")
         else:
-            warnings.append(f"Аналог: {msg}")
+            warnings.append(f"analog_brand: {msg}")
+    
+    # Проверка бренда альтернативы (той же марки)
+    ok, level, msg, is_same = check_alt_brand(
+        item.get('name'), item.get('alt_brand'),
+        item.get('supplier1'), item.get('url1')
+    )
+    if msg:
+        if level == 'FAIL':
+            errors.append(f"alt_brand: {msg}")
+        else:
+            warnings.append(f"alt_brand: {msg}")
     
     # Проверка поставщиков
     ok, msg = check_suppliers_different(item.get('supplier1'), item.get('supplier2'))
