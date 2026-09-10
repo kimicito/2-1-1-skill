@@ -1,0 +1,227 @@
+[
+  {
+    "num": 1,
+    "name": "Видеокамера 4Мп уличная цилиндрическая IP-камера, с ИК-подсветкой до 50м (2.8-12 мм)//DS-2CD2643G0-IZS//HIKVISION",
+    "price1": 15894,
+    "url1": "https://hikvision24.ru/videokamery/ip-videokamery/ds-2cd2643g0-izs/",
+    "supplier1": "hikvision24.ru",
+    "price2": 25713,
+    "url2": "https://www.proline-rus.ru/catalog/ip-kamery-hikvision-5246/hikvision-ds-2cd2643g0-izs-2-8-12mm-61222/",
+    "supplier2": "proline-rus.ru",
+    "analog_brand": "—",
+    "analog_price": null,
+    "analog_url": null,
+    "analog_supplier": null,
+    "alt_brand": "DS-2CD2646G2-IZS",
+    "alt_price": 23991,
+    "alt_url": "https://n-el.ru/katalog/videonablyudenie/videokamery/ip-videokamery/ds-2cd2643g0-izs",
+    "alt_supplier": "n-el.ru",
+    "comment": "Модель снята с производства. Рекомендуется замена на DS-2CD2646G2-IZS (новее, AcuSense). Экономия при переходе на аналог не выявлена.",
+    "date": "2026-09-07",
+    "specs": {
+      "Разрешение": "4 Мп",
+      "Тип": "IP-камера цилиндрическая",
+      "Объектив": "2.8-12 мм моторизованный",
+      "ИК-подсветка": "до 50 м",
+      "Защита": "IP67, IK10",
+      "Технология": "WDR 120dB, H.265+",
+      "Питание": "PoE / 12V DC"
+    },
+    "alt_specs": {
+      "Разрешение": "4 Мп",
+      "Тип": "IP-камера цилиндрическая",
+      "Объектив": "2.8-12 мм моторизованный",
+      "ИК-подсветка": "до 50 м",
+      "Защита": "IP67, IK10",
+      "Технология": "AcuSense 2.0, WDR 120dB, H.265+",
+      "Питание": "PoE / 12V DC"
+    },
+    "sources": [
+      "https://www.dipolnet.com/compact_ip_camera_hikvision_ds-2cd2643g0-izs_4mp_motozoom_2_8-12mm_0_018_lx_ir_up_to_50m_wdr_ik10_h_265-h_264_K17856.htm",
+      "https://www.securityinformed.com/ip-cameras-comparison/1515548571,1648508253.html"
+    ]
+  },
+  {
+    "num": 2,
+    "name": "Коммутатор, 8х10/100 Mbit/s//NS-208A CR//ICP DAS",
+    "price1": 16868,
+    "url1": "https://icp-das.ru/product/ns-208a",
+    "supplier1": "icp-das.ru",
+    "price2": 14273,
+    "url2": "https://born-shop.ru/catalog/210580.html",
+    "supplier2": "born-shop.ru",
+    "analog_brand": "MOXA EDS-208A",
+    "analog_price": 18500,
+    "analog_url": "https://elmark-automation.com/shop/moxa/eds-208a",
+    "analog_supplier": "ipc2u.ru",
+    "alt_brand": "NS-208 (без А)",
+    "alt_price": 21219,
+    "alt_url": "https://ipc2u.ru/catalog/ns-208a/",
+    "alt_supplier": "ipc2u.ru",
+    "comment": "ICP DAS — тайваньский производитель. Аналог MOXA EDS-208A — металлический корпус, аналогичные характеристики. NS-208 (без А) — вариант в металлическом корпусе.",
+    "date": "2026-09-07",
+    "specs": {
+      "Порты": "8 x 10/100 Mbit/s",
+      "Корпус": "Пластик",
+      "Крепление": "DIN-рейка",
+      "Питание": "9-30V DC",
+      "Температура": "0...+60°C",
+      "MTBF": ">200 000 ч"
+    },
+    "analog_specs": {
+      "Порты": "8 x 10/100 Mbit/s",
+      "Корпус": "Металл",
+      "Крепление": "DIN-рейка",
+      "Питание": "9-30V DC",
+      "Температура": "-10...+60°C",
+      "MTBF": ">500 000 ч"
+    },
+    "alt_specs": {
+      "Порты": "8 x 10/100 Mbit/s",
+      "Корпус": "Металл",
+      "Крепление": "DIN-рейка",
+      "Питание": "9-30V DC",
+      "Температура": "0...+60°C",
+      "MTBF": ">200 000 ч"
+    },
+    "sources": [
+      "https://icp-das.ru/product/ns-208a",
+      "https://ipc2u.ru/catalog/promyshlennye-kommunikacii/promyshlennye-kommutatory/"
+    ]
+  },
+  {
+    "num": 3,
+    "name": "Патч-корд U/UTP, категория 5e, 1,5 м, стандартный разъем синий//PC-LPM-STP-RJ45-RJ45-C5e-1,5M-BL////Hyperline",
+    "price1": 650,
+    "url1": "https://www.chipdip.ru/product0/8033808732",
+    "supplier1": "chipdip.ru",
+    "price2": 615,
+    "url2": "https://market.yandex.ru/card/patch-kord-hyperline-pc-lpm-stp-rj45-rj45-c5e-1-5m-lszh-bl/...",
+    "supplier2": "Яндекс Маркет",
+    "analog_brand": "ITK",
+    "analog_price": 320,
+    "analog_url": "https://market.yandex.ru/search?text=itk+patch+cord+cat5e+1.5m",
+    "analog_supplier": "Яндекс Маркет",
+    "alt_brand": "PC-LPM-UTP-RJ45-RJ45-C5e-1.5M-BL",
+    "alt_price": 583,
+    "alt_url": "https://www.ami-com.ru/catalog/...",
+    "alt_supplier": "ami-com.ru",
+    "comment": "Стандартный патч-корд Cat.5e. Аналог ITK дешевле в 2 раза. Переход на UTP (неэкранированный) экономит ~10%.",
+    "date": "2026-09-07",
+    "specs": {
+      "Тип кабеля": "STP (экранированный)",
+      "Категория": "Cat.5e",
+      "Длина": "1.5 м",
+      "Цвет": "Синий (BL)",
+      "Разъёмы": "RJ45-RJ45",
+      "Оболочка": "LSZH"
+    },
+    "analog_specs": {
+      "Тип кабеля": "UTP (неэкранированный)",
+      "Категория": "Cat.5e",
+      "Длина": "1.5 м",
+      "Цвет": "Синий/Серый",
+      "Разъёмы": "RJ45-RJ45",
+      "Оболочка": "PVC/LSZH"
+    },
+    "alt_specs": {
+      "Тип кабеля": "UTP (неэкранированный)",
+      "Категория": "Cat.5e",
+      "Длина": "1.5 м",
+      "Цвет": "Синий (BL)",
+      "Разъёмы": "RJ45-RJ45",
+      "Оболочка": "LSZH"
+    },
+    "sources": []
+  },
+  {
+    "num": 4,
+    "name": "Патч-корд U/UTP, категория 5e, 2 м, стандартный разъем синий//PC-LPM-UTP-RJ45-RJ45-C5e-2M-BL////Hyperline",
+    "price1": 583,
+    "url1": "https://www.ami-com.ru/catalog/pc-lpm-utp-rj45-rj45-c5e-2m-lszh-bl/",
+    "supplier1": "ami-com.ru",
+    "price2": 630,
+    "url2": "https://www.vseinstrumenti.ru/product/patch-kord-hyperline-pc-lpm-utp-rj45-rj45-c5e-2m-lszh-bl-u-utp-cat-5e-100-fluke-componen-229963-1947502/",
+    "supplier2": "vseinstrumenti.ru",
+    "analog_brand": "ITK",
+    "analog_price": 280,
+    "analog_url": "https://market.yandex.ru/search?text=itk+patch+cord+cat5e+2m",
+    "analog_supplier": "Яндекс Маркет",
+    "alt_brand": "PC-LPM-UTP-RJ45-RJ45-C5e-2M-LSZH-GY",
+    "alt_price": 472,
+    "alt_url": "https://olmi-connect.ru/shop/patch-kord-hyperline-pc-lpm-utp-rj45-rj45-c5e-2m-l44816/",
+    "alt_supplier": "olmi-connect.ru",
+    "comment": "Патч-корд UTP Cat.5e 2м. Аналог ITK дешевле в 2 раза. Версия в сером кожухе (LSZH-GY) дешевле синей на ~20%.",
+    "date": "2026-09-07",
+    "specs": {
+      "Тип кабеля": "UTP (неэкранированный)",
+      "Категория": "Cat.5e",
+      "Длина": "2.0 м",
+      "Цвет": "Синий (BL)",
+      "Разъёмы": "RJ45-RJ45",
+      "Оболочка": "LSZH"
+    },
+    "analog_specs": {
+      "Тип кабеля": "UTP (неэкранированный)",
+      "Категория": "Cat.5e",
+      "Длина": "2.0 м",
+      "Цвет": "Синий/Серый",
+      "Разъёмы": "RJ45-RJ45",
+      "Оболочка": "PVC/LSZH"
+    },
+    "alt_specs": {
+      "Тип кабеля": "UTP (неэкранированный)",
+      "Категория": "Cat.5e",
+      "Длина": "2.0 м",
+      "Цвет": "Серый (GY)",
+      "Разъёмы": "RJ45-RJ45",
+      "Оболочка": "LSZH"
+    },
+    "sources": []
+  },
+  {
+    "num": 8,
+    "name": "Экранированный патч-корд Hyperline STP, категория 5e, 0,5м, синий//PC-LPM-STP-RJ45-RJ45-C5e-0,5M-BL////Hyperline",
+    "price1": 615,
+    "url1": "https://market.yandex.ru/card/patch-kord-hyperline-pc-lpm-stp-rj45-rj45-c5e-0-5m-lszh-bl/...",
+    "supplier1": "Яндекс Маркет",
+    "price2": 640,
+    "url2": "https://www.chipdip.ru/product/...",
+    "supplier2": "chipdip.ru",
+    "analog_brand": "ITK",
+    "analog_price": 250,
+    "analog_url": "https://market.yandex.ru/search?text=itk+patch+cord+stp+cat5e+0.5m",
+    "analog_supplier": "Яндекс Маркет",
+    "alt_brand": "PC-LPM-STP-RJ45-RJ45-C5e-0.5M-LSZH-BK",
+    "alt_price": 621,
+    "alt_url": "https://market.yandex.ru/card/patch-kord-hyperline-pc-lpm-stp-rj45-rj45-c5e-0-5m-lszh-bk/...",
+    "alt_supplier": "Яндекс Маркет",
+    "comment": "Патч-корд STP Cat.5e 0.5м. Аналог ITK дешевле в 2.5 раза. Чёрный вариант по той же цене.",
+    "date": "2026-09-07",
+    "specs": {
+      "Тип кабеля": "STP (экранированный)",
+      "Категория": "Cat.5e",
+      "Длина": "0.5 м",
+      "Цвет": "Синий (BL)",
+      "Разъёмы": "RJ45-RJ45",
+      "Оболочка": "LSZH"
+    },
+    "analog_specs": {
+      "Тип кабеля": "STP (экранированный)",
+      "Категория": "Cat.5e",
+      "Длина": "0.5 м",
+      "Цвет": "Синий/Серый",
+      "Разъёмы": "RJ45-RJ45",
+      "Оболочка": "PVC/LSZH"
+    },
+    "alt_specs": {
+      "Тип кабеля": "STP (экранированный)",
+      "Категория": "Cat.5e",
+      "Длина": "0.5 м",
+      "Цвет": "Чёрный (BK)",
+      "Разъёмы": "RJ45-RJ45",
+      "Оболочка": "LSZH"
+    },
+    "sources": []
+  }
+]

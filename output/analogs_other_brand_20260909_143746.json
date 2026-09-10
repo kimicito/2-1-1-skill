@@ -1,0 +1,42 @@
+[
+  {
+    "type": "other_brand",
+    "original": "Видеокамера 4Мп уличная цилиндрическая IP-камера, с ИК-подсветкой до 50м (2.8-12 мм)//DS-2CD2643G0-IZS//HIKVISION",
+    "analog": "—",
+    "original_price": 15894,
+    "analog_price": null,
+    "row_num": 1
+  },
+  {
+    "type": "other_brand",
+    "original": "Коммутатор, 8х10/100 Mbit/s//NS-208A CR//ICP DAS",
+    "analog": "MOXA EDS-208A",
+    "original_price": 16868,
+    "analog_price": 18500,
+    "row_num": 2
+  },
+  {
+    "type": "other_brand",
+    "original": "Патч-корд U/UTP, категория 5e, 1,5 м, стандартный разъем синий//PC-LPM-STP-RJ45-RJ45-C5e-1,5M-BL////Hyperline",
+    "analog": "ITK",
+    "original_price": 650,
+    "analog_price": 320,
+    "row_num": 3
+  },
+  {
+    "type": "other_brand",
+    "original": "Патч-корд U/UTP, категория 5e, 2 м, стандартный разъем синий//PC-LPM-UTP-RJ45-RJ45-C5e-2M-BL////Hyperline",
+    "analog": "ITK",
+    "original_price": 583,
+    "analog_price": 280,
+    "row_num": 4
+  },
+  {
+    "type": "other_brand",
+    "original": "Экранированный патч-корд Hyperline STP, категория 5e, 0,5м, синий//PC-LPM-STP-RJ45-RJ45-C5e-0,5M-BL////Hyperline",
+    "analog": "ITK",
+    "original_price": 615,
+    "analog_price": 250,
+    "row_num": 8
+  }
+]
