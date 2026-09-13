@@ -297,6 +297,40 @@ def check_suppliers_different(supplier1, supplier2):
     return True, None
 
 
+import re
+
+EMAIL_RE = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
+
+def _is_clickable_url(url):
+    """Проверяет, что URL кликабельный (начинается с http)."""
+    if not url:
+        return False
+    return str(url).strip().lower().startswith(('http://', 'https://'))
+
+
+def check_price_fallback_action(item):
+    """v7.8: если цена отсутствует, но есть кликабельный URL — в комментарии должен быть email поставщика.
+
+    Returns: (errors, warnings)
+    """
+    errors, warnings = [], []
+    comment = str(item.get('comment') or '')
+    special = {"Цена не указана", "Не найдена", "Не найдена за 10 мин", "Не найдена за 10 минут"}
+
+    for field_price, field_url in [('price1', 'url1'), ('price2', 'url2')]:
+        p = item.get(field_price)
+        if p is None:
+            continue
+        p_str = str(p).strip()
+        url = item.get(field_url)
+        if p_str in special and _is_clickable_url(url) and not EMAIL_RE.search(comment):
+            warnings.append(
+                f"{field_price}: '{p_str}' — URL есть, но нет email для запроса цены. "
+                f"Ищите email на странице контактов сайта поставщика (до 2 мин)."
+            )
+    return errors, warnings
+
+
 def check_no_duplication(price1, url1, supplier1, price2, url2, supplier2):
     """Проверка, что Цена2 не дублирует Цену1 (галлюцинация).
     
@@ -435,6 +469,11 @@ def inline_eval_item(item):
     )
     if not ok:
         errors.append(f"Дублирование: {msg}")
+    
+    # v7.8: email-fallback при отсутствии цены
+    e, w = check_price_fallback_action(item)
+    errors.extend(e)
+    warnings.extend(w)
     
     return errors, warnings
 
