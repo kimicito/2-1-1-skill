@@ -426,6 +426,25 @@ def eval_price_comparison(filepath, input_filepath=None):
         if has_price_1 and not has_price_2:
             warnings.append(f"WARN [{sku}]: Только 1 цена оригинала. Цель: 2 цены от разных поставщиков.")
 
+        # WARN 11 (v7.8): Цена не найдена/не указана, но нет email для запроса цены
+        EMAIL_RE = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
+        comment_text = str(comment) if comment else ""
+        for label, price_val, url_val in [("Цена 1", price_1, url_1), ("Цена 2", price_2, url_2)]:
+            if price_val is None:
+                continue
+            p_str = str(price_val).strip()
+            price_missing = p_str in ["Цена не указана", "Не найдена", "Не найдена за 10 мин", "Не найдена за 10 минут"]
+            has_url = url_val is not None and is_clickable_url(url_val)
+            if price_missing and has_url and not EMAIL_RE.search(comment_text):
+                warnings.append(
+                    f"WARN [{sku}]: {label} = '{p_str}', URL есть, но в комментарии нет email поставщика. "
+                    f"Закупщику не к кому обратиться — найдите email на сайте поставщика (email-fallback v7.8)."
+                )
+            elif price_missing and not has_url and p_str == "Цена не указана":
+                warnings.append(
+                    f"WARN [{sku}]: {label} = 'Цена не указана', но нет URL — невозможно ни проверить товар, ни запросить цену."
+                )
+
         # WARN 4: Цены отличаются подозрительно
         if has_price_1 and has_price_2:
             p1 = extract_price(price_1)

@@ -1,373 +1,95 @@
-# PriceHunter 2+1+1 — SaaS для сравнения цен закупок
+# Price Comparison Skill v7.8
 
-> Автоматический закупочный аналитик: ищет 2 цены оригинала + 2 аналога, строит матрицу сравнения и рекомендации.
+[![OpenClaw](https://img.shields.io/badge/OpenClaw-Skill-blue)](https://openclaw.ai)
+[![Version](https://img.shields.io/badge/version-7.8-green)](SKILL.md)
 
-## 🚀 Быстрый старт (автоматическая установка)
+Skill для поиска и сравнения цен на материалы и оборудование. Работает с Excel-таблицами, ищет по B2B-каталогам и маркетплейсам, записывает 2 цены + аналоги.
 
-```bash
-git clone https://github.com/kimicito/2-1-1-skill.git pricehunter
-cd pricehunter
+## ⚠️ Важно: Какие файлы использовать
 
-# 1. Настройте .env (минимум: DATABASE_URL, APP_ID, APP_SECRET, OWNER_UNION_ID)
-cp .env.example .env
-nano .env
+**Для работы используйте только эти файлы:**
 
-# 2. Запустите автоматическую установку
-sudo bash scripts/setup.sh
-```
+| Файл | Назначение | Обязательный |
+|------|-----------|-------------|
+| `scripts/runner_v3.py` | Генерация Excel с inline eval | ✅ Да |
+| `scripts/eval.py` | Post-factum проверка (25 проверок) | ✅ Да |
+| `scripts/inline_eval.py` | Inline проверки во время работы | ✅ Да (вызывается runner_v3.py) |
+| `scripts/matrix_builder_v3.py` | Сборка матриц аналогов | ⚪ Опционально |
+| `SKILL.md` | Полная документация для агента | 📖 Читать |
+| `HARNESS.md` | Архитектура и state machine | 📖 Читать |
 
-Приложение будет доступно по адресу `http://localhost:3000`
+**Не используйте** файлы из `archive/v5-v6/` — они устарели.
 
----
+## Формула 2+1+1
 
-## 📋 Ручная установка (пошагово)
+| Тип | Описание | Лимит | Fallback |
+|-----|----------|-------|----------|
+| **Цена 1** | Оригинал, поставщик 1 | 10 мин | FAIL если не найдена |
+| **Цена 2** | Оригинал, поставщик 2 | 10 мин | «Не найдена за 10 мин» |
+| **Аналог др. марки** | Другой бренд | 5 мин | «—» (прочерк) |
+| **Аналог той же марки** | Тот же бренд | 10 мин | «—» (прочерк) |
 
-### 1. Зависимости
+## Возможности v7.8
 
-```bash
-npm install
-```
+- ✅ **Кликабельные цены** — каждая цена = гиперссылка на товар
+- ✅ **25 проверок eval** — 11 FAIL + 14 WARN
+- ✅ **Матрицы аналогов** — секции сравнения на отдельных вкладках
+- ✅ **Проверка URL** — защита от ссылок на главную/404/поиск
+- ✅ **Graceful fallback** — "Цена не указана" вместо блокировки
+- ✅ **Email-fallback** — если цены нет, закупщик получает email поставщика для запроса цены
 
-### 2. Переменные окружения
-
-```bash
-cp .env.example .env
-# Отредактируйте .env
-```
-
-**Обязательные переменные:**
-
-| Переменная | Описание |
-|-----------|----------|
-| `DATABASE_URL` | MySQL connection string |
-| `APP_ID` | Kimi OAuth App ID |
-| `APP_SECRET` | JWT secret (мин. 32 символа) |
-| `OWNER_UNION_ID` | Union ID первого администратора |
-
-**Опциональные:**
-
-| Переменная | Описание | По умолчанию |
-|-----------|----------|-------------|
-| `KIMI_API_KEY` | Kimi API key для LLM-агента | — (fallback: scraping) |
-| `PORT` | Порт сервера | 3000 |
-
-### 3. База данных
+## Быстрый старт
 
 ```bash
-# Установить MySQL (если ещё не установлен)
-sudo apt-get update
-sudo apt-get install -y mysql-server
-sudo systemctl start mysql
+# Установка
+git clone https://github.com/kimicito/price-comparison-skill.git
 
-# Создать БД и пользователя
-sudo mysql -e "CREATE DATABASE pricehunter CHARACTER SET utf8mb4;"
-sudo mysql -e "CREATE USER 'pricehunter'@'localhost' IDENTIFIED BY 'pricehunter_pass';"
-sudo mysql -e "GRANT ALL PRIVILEGES ON pricehunter.* TO 'pricehunter'@'localhost';"
-sudo mysql -e "FLUSH PRIVILEGES;"
+# Создание Excel с ценами
+python3 scripts/runner_v3.py input.xlsx results.json output/
 
-# Применить миграции
-npm run db:push
+# Проверка готового файла
+python3 scripts/eval.py output/price_comparison_main_*.xlsx
 ```
 
-### 4. Сборка и запуск
-
-```bash
-# Production сборка
-npm run build
-
-# Запуск через Node.js напрямую
-NODE_ENV=production PORT=3000 node dist/boot.js
-
-# Или через systemd
-sudo cp pricehunter.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable pricehunter
-sudo systemctl start pricehunter
-```
-
----
-
-## 🎮 Управление приложением
-
-### Systemd (рекомендуется)
-
-```bash
-# Статус
-sudo systemctl status pricehunter
-
-# Запуск / остановка / перезапуск
-sudo systemctl start pricehunter
-sudo systemctl stop pricehunter
-sudo systemctl restart pricehunter
-
-# Автозапуск при загрузке
-sudo systemctl enable pricehunter
-
-# Логи в реальном времени
-sudo journalctl -u pricehunter -f
-
-# Логи за последний час
-sudo journalctl -u pricehunter --since "1 hour ago"
-```
-
-### PM2 (альтернатива)
-
-```bash
-# Установить PM2
-npm install -g pm2
-
-# Запуск
-pm2 start ecosystem.config.js
-
-# Управление
-pm2 status
-pm2 restart pricehunter
-pm2 stop pricehunter
-pm2 logs pricehunter
-
-# Автозапуск
-pm2 startup
-pm2 save
-```
-
-### Логи
-
-```bash
-# Application logs
-/var/log/pricehunter/out.log
-/var/log/pricehunter/error.log
-
-# Nginx logs (если настроен)
-/var/log/nginx/pricehunter-access.log
-/var/log/nginx/pricehunter-error.log
-```
-
----
-
-## 🌐 Nginx + SSL
-
-### 1. Установить Nginx
-
-```bash
-sudo apt-get install -y nginx
-```
-
-### 2. Настроить конфиг
-
-```bash
-sudo cp nginx.conf /etc/nginx/sites-available/pricehunter
-# Отредактируйте server_name
-sudo nano /etc/nginx/sites-available/pricehunter
-
-sudo ln -s /etc/nginx/sites-available/pricehunter /etc/nginx/sites-enabled/
-sudo rm -f /etc/nginx/sites-enabled/default
-sudo nginx -t
-sudo systemctl restart nginx
-```
-
-### 3. SSL через Let's Encrypt
-
-```bash
-sudo apt-get install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d pricehunter.yourdomain.com
-```
-
----
-
-## 💾 Бэкапы
-
-### Ручной бэкап
-
-```bash
-bash scripts/backup.sh
-# Создаст: /var/backups/pricehunter/pricehunter_YYYYMMDD_HHMMSS.sql.gz
-```
-
-### Автоматические бэкапы (cron)
-
-```bash
-# Ежедневно в 3:00
-sudo crontab -e
-# Добавить строку:
-0 3 * * * /root/.openclaw/workspace/projects/2-1-1-skill/scripts/backup.sh >> /var/log/pricehunter/backup.log 2>&1
-```
-
-### Восстановление из бэкапа
-
-```bash
-gunzip /var/backups/pricehunter/pricehunter_20260101_030000.sql.gz
-mysql -u pricehunter -p pricehunter < pricehunter_20260101_030000.sql
-```
-
----
-
-## 🔧 Обслуживание
-
-### Обновление приложения
-
-```bash
-cd /root/.openclaw/workspace/projects/2-1-1-skill
-git pull
-npm install
-npm run build
-sudo systemctl restart pricehunter
-```
-
-### Проверка здоровья
-
-```bash
-# API доступен?
-curl -s http://localhost:3000 | head -1
-
-# База данных?
-mysql -u pricehunter -p -e "SELECT COUNT(*) FROM pricehunter.jobs;"
-
-# Место на диске
-df -h
-
-# Память
-free -h
-```
-
-### Очистка старых данных
-
-```bash
-# Удалить задачи старше 90 дней
-mysql -u pricehunter -p -e "
-  DELETE FROM job_items WHERE jobId IN (
-    SELECT id FROM jobs WHERE createdAt < NOW() - INTERVAL 90 DAY
-  );
-  DELETE FROM jobs WHERE createdAt < NOW() - INTERVAL 90 DAY;
-"
-```
-
----
-
-## 📊 Мониторинг
-
-### Базовые метрики
-
-```bash
-# CPU / Memory процесса
-ps aux | grep pricehunter
-
-# Сетевые соединения
-ss -tlnp | grep 3000
-
-# Размер БД
-mysql -u pricehunter -p -e "
-  SELECT 
-    table_name,
-    ROUND(data_length / 1024 / 1024, 2) AS size_mb
-  FROM information_schema.tables
-  WHERE table_schema = 'pricehunter';
-"
-```
-
-### Настройка алертов (опционально)
-
-Добавьте в cron проверку доступности:
-
-```bash
-*/5 * * * * curl -sf http://localhost:3000 > /dev/null || echo "PriceHunter DOWN" | mail -s "ALERT" admin@example.com
-```
-
----
-
-## 🐳 Docker (альтернатива)
-
-```bash
-# Только база данных
-docker compose up -d db
-
-# Всё приложение
-docker compose up -d
-```
-
----
-
-## 🆘 Troubleshooting
-
-### Приложение не запускается
-
-```bash
-# Проверить логи
-sudo journalctl -u pricehunter -n 50
-
-# Проверить .env
-cat /root/.openclaw/workspace/projects/2-1-1-skill/.env
-
-# Проверить права
-ls -la /var/log/pricehunter
-```
-
-### Ошибки базы данных
-
-```bash
-# Проверить подключение
-mysql -u pricehunter -p -e "SELECT 1;"
-
-# Пересоздать БД (осторожно!)
-mysql -u root -e "DROP DATABASE pricehunter; CREATE DATABASE pricehunter;"
-npm run db:push
-```
-
-### Порт занят
-
-```bash
-# Найти процесс
-sudo ss -tlnp | grep 3000
-
-# Или изменить порт в .env
-PORT=3001
-```
-
----
-
-## 📄 Структура проекта
+## Структура репозитория
 
 ```
-pricehunter/
-├── api/                    # Backend (Hono + tRPC)
-│   ├── pricehunter/        # Core агент 2+1+1
-│   │   ├── agent.ts        # Логика поиска
-│   │   ├── worker.ts       # Фоновые задачи
-│   │   ├── search.ts       # Web scraping
-│   │   ├── llm.ts          # LLM-агент Kimi
-│   │   ├── excel.ts        # Генерация отчётов
-│   │   └── types.ts        # Типы данных
-│   ├── jobs-router.ts      # API задач
-│   └── boot.ts             # Точка входа
-├── src/                    # Frontend (React + Vite)
-│   ├── pages/              # Страницы
-│   └── components/ui/      # UI компоненты
-├── db/                     # Схема БД
-├── scripts/                # Скрипты
-│   ├── setup.sh            # Автоустановка
-│   └── backup.sh           # Бэкапы
-├── .env                    # Переменные окружения
-├── pricehunter.service     # Systemd конфиг
-├── nginx.conf              # Nginx конфиг
-├── ecosystem.config.js     # PM2 конфиг
-└── docker-compose.yml      # Docker
+price-comparison-skill/
+├── scripts/
+│   ├── runner_v3.py          ← Используй это (основной runner)
+│   ├── eval.py               ← Используй это (проверка)
+│   ├── inline_eval.py        ← Используй это (inline проверки)
+│   ├── matrix_builder_v3.py  ← Используй это (матрицы аналогов)
+│   └── ...                   ← Другие актуальные скрипты
+├── archive/
+│   └── v5-v6/                ← ❌ НЕ ИСПОЛЬЗУЙ (старые версии)
+│       ├── runner.py
+│       ├── runner_v2.py
+│       ├── cache_v2.py
+│       └── ...
+├── SKILL.md                  ← 📖 Документация для агента
+├── HARNESS.md                ← 📖 Архитектура
+├── README.md                 ← 📖 Этот файл
+└── templates/                ← Шаблоны категорий
 ```
 
----
+## Архитектура
 
-## 📦 Скрипты
+```
+[Excel input] → [Поиск цен] → [Inline Eval] → [Excel + URL] → [Eval] → [Итоговый файл]
+                                      ↓
+                              [Матрицы аналогов]
+```
 
-| Команда | Описание |
-|---------|----------|
-| `npm run dev` | Разработка |
-| `npm run build` | Production сборка |
-| `npm start` | Запуск сервера |
-| `npm run db:push` | Миграции БД |
-| `npm test` | Тесты |
+## Версии
 
----
+- **v7.8** — Email-fallback: при отсутствии цены агент ищет контактный email поставщика и добавляет его в комментарий (WARN-проверки в eval.py и inline_eval.py)
+- **v7.7** — URL validation + fallback prices + matrix sheets
+- **v7.3** — Anti-hallucination eval checks
+- **v7.0** — Formula 2+1+1 + Clickable Links + Full Design
+- **v6.0** — Tests, retry/fallback, cache v2 (в архиве)
+- **v5.2** — Excel Format v2 (в архиве)
 
-## 📞 Поддержка
+## Лицензия
 
-- **Репозиторий:** https://github.com/kimicito/2-1-1-skill
-- **Логи:** `/var/log/pricehunter/`
-- **Бэкапы:** `/var/backups/pricehunter/`
+MIT — свободное использование в проектах OpenClaw.
